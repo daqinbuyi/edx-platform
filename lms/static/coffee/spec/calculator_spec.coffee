@@ -84,10 +84,11 @@ describe 'Calculator', ->
 
   describe 'selectHint', ->
     it 'select correct hint item', ->
+      spyOn($.fn, 'focus')
       element = $('.hint-item').eq(1)
       @calculator.selectHint(element)
 
-      expect(element).toBeFocused()
+      expect(element.focus).toHaveBeenCalled()
       expect(@calculator.activeHint).toEqual(element)
       expect(@calculator.hintPopup).toHaveAttr('aria-activedescendant', element.attr('id'))
 
@@ -146,13 +147,14 @@ describe 'Calculator', ->
 
     assertHintIsVisible = (calc, key) ->
       spyOn(calc, 'showHint')
+      spyOn($.fn, 'focus')
       e = jQuery.Event('keydown', { keyCode: key });
       value = calc.handleKeyDown(e)
 
       expect(calc.showHint).toHaveBeenCalled
       expect(value).toBeFalsy()
       expect(e.isDefaultPrevented()).toBeTruthy()
-      expect(calc.activeHint).toBeFocused()
+      expect(calc.activeHint.focus).toHaveBeenCalled()
 
     assertNothingHappens = (calc, key) ->
       spyOn(calc, 'showHint')
