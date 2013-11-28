@@ -131,6 +131,7 @@ class @Calculator
       e.preventDefault()
       return false
 
+    # allow the event to propagate
     return true
 
   handleKeyDownOnHint: (e) ->
@@ -142,6 +143,14 @@ class @Calculator
       when @KEY.TAB
         # hide popup with hints
         @hideHint()
+
+      when @KEY.ESC
+        # hide popup with hints
+        @hideHint()
+        @hintButton.focus()
+
+        e.stopPropagation()
+        return false
 
       when @KEY.LEFT, @KEY.UP
         if e.shiftKey
@@ -163,6 +172,7 @@ class @Calculator
         e.stopPropagation()
         return false
 
+    # allow the event to propagate
     return true
 
   handleClickOnDocument: (e) ->

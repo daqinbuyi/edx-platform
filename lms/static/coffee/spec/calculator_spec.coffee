@@ -193,6 +193,7 @@ describe 'Calculator', ->
       spyOn(calc, 'hideHint')
       spyOn(calc, 'prevHint')
       spyOn(calc, 'nextHint')
+      spyOn($.fn, 'focus')
 
       cases =
         left:
@@ -200,93 +201,116 @@ describe 'Calculator', ->
             keyCode: KEY.LEFT
             shiftKey: false
           returnedValue: false
-          called: ['prevHint']
-          isPropagated: true
+          called:
+            'prevHint': calc
+          isPropagationStopped: true
 
         leftWithShift:
           returnedValue: true
           event:
             keyCode: KEY.LEFT
             shiftKey: true
-          not_called: ['prevHint']
+          not_called:
+            'prevHint': calc
 
         up:
           event:
             keyCode: KEY.UP
             shiftKey: false
           returnedValue: false
-          called: ['prevHint']
-          isPropagated: true
+          called:
+            'prevHint': calc
+          isPropagationStopped: true
 
         upWithShift:
           returnedValue: true
           event:
             keyCode: KEY.UP
             shiftKey: true
-          not_called: ['prevHint']
+          not_called:
+            'prevHint': calc
 
         right:
           event:
             keyCode: KEY.RIGHT
             shiftKey: false
           returnedValue: false
-          called: ['nextHint']
-          isPropagated: true
+          called:
+            'nextHint': calc
+          isPropagationStopped: true
 
         rightWithShift:
           returnedValue: true
           event:
             keyCode: KEY.RIGHT
             shiftKey: true
-          not_called: ['nextHint']
+          not_called:
+            'nextHint': calc
 
         down:
           event:
             keyCode: KEY.DOWN
             shiftKey: false
           returnedValue: false
-          called: ['nextHint']
-          isPropagated: true
+          called:
+            'nextHint': calc
+          isPropagationStopped: true
 
         downWithShift:
           returnedValue: true
           event:
             keyCode: KEY.DOWN
             shiftKey: true
-          not_called: ['nextHint']
+          not_called:
+            'nextHint': calc
 
         tab:
           returnedValue: true
           event:
             keyCode: KEY.TAB
             shiftKey: false
-          called: ['hideHint']
+          called:
+            'hideHint': calc
+
+        esc:
+          returnedValue: false
+          event:
+            keyCode: KEY.ESC
+            shiftKey: false
+          called:
+            'hideHint': calc
+            'focus': $.fn
+          isPropagationStopped: true
 
         alt:
           returnedValue: true
           event:
             which: KEY.ALT
-          not_called: ['nextHint', 'prevHint', 'hideHint']
+          not_called:
+            'hideHint': calc
+            'nextHint': calc
+            'prevHint': calc
 
       $.each(cases, (key, data) ->
         calc.hideHint.reset()
         calc.prevHint.reset()
         calc.nextHint.reset()
+        $.fn.focus.reset()
 
         e = jQuery.Event('keydown', data.event or {});
         value = calc.handleKeyDownOnHint(e)
 
         if data.called
-          $.each(data.called, (index, spy) ->
-            expect(calc[spy]).toHaveBeenCalled()
+          $.each(data.called, (method, obj) ->
+            expect(obj[method]).toHaveBeenCalled()
           )
 
         if data.not_called
-          $.each(data.not_called, (index, spy) ->
-            expect(calc[spy]).not.toHaveBeenCalled()
+          $.each(data.not_called, (method, obj) ->
+            expect(obj[method]).not.toHaveBeenCalled()
           )
 
-        if data.isPropagated
+        if data.isPropagationStopped
           expect(e.isPropagationStopped()).toBeTruthy()
         else
           expect(e.isPropagationStopped()).toBeFalsy()
