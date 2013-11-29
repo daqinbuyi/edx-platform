@@ -9,7 +9,7 @@ from django.conf import settings
 from xmodule.contentstore.content import StaticContent
 from xmodule.contentstore.django import contentstore
 from xmodule.exceptions import NotFoundError
-
+from splinter.request_handler.request_handler import RequestHandler
 
 TEST_ROOT = settings.COMMON_TEST_DATA_ROOT
 
@@ -118,6 +118,9 @@ def i_see_status_message(_step, status):
 
     assert not world.css_visible(SELECTORS['error_bar'])
     assert world.css_has_text(SELECTORS['status_bar'], STATUSES[status.strip()])
+
+    if world.is_css_present(TRANSCRIPTS_BUTTONS["download_to_edit"][0], wait_time=1):
+        _transcripts_file_can_be_downloaded()
 
 
 @step('I (.*)see button "([^"]*)"$')
@@ -245,3 +248,18 @@ def set_value_transcripts_field(_step, value, field_name):
 
     field_id = '#' + world.browser.find_by_xpath('//label[text()="%s"]' % field_name.strip())[0]['for']
     world.css_fill(field_id, value.strip())
+
+
+def _transcripts_file_can_be_downloaded():
+    world.wait_for_ajax_complete()
+    request = RequestHandler()
+    url = world.css_find(TRANSCRIPTS_BUTTONS["download_to_edit"][0]).first['href']
+    request.connect(url)
+
+    assert request.status_code.is_success()
+
+
+
+
+
+

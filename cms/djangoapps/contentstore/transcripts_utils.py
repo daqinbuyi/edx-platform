@@ -328,6 +328,9 @@ def manage_video_subtitles_save(old_item, new_item):
     for video_id in possible_video_id_list:
         if not video_id:
             continue
+        if not sub_name:
+            remove_subs_from_store(video_id, new_item)
+            continue
         # copy_or_rename_transcript changes item.sub of module
         try:
             # updates item.sub with `video_id`, if it is successful.

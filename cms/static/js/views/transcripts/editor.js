@@ -90,7 +90,12 @@ function($, Backbone, _, Utils, MetadataView, MetadataCollection) {
             var isSubsModified = (function (values) {
                 var isSubsChanged = subs.hasChanged("value");
 
-                return Boolean(isSubsChanged && _.isString(values.sub));
+                return Boolean(
+                    isSubsChanged &&
+                    (
+                        _.isString(values.sub) || _.isNull(subs.getValue())
+                    )
+                );
             }(modifiedValues));
 
             // When we change value of `sub` field in the `Advanced`,

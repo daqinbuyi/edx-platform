@@ -652,4 +652,3 @@ Feature: Video Component Editor
         And I save changes
         Then when I view the video it does show the captions
         And I see "LILA FISHER: Hi, welcome to Edx." text in the captions
-
